@@ -1,17 +1,31 @@
-# widget1
+# 🎬 Movie App - Basic Widget & Carousel 🎯
+Projek Flutter ini menampilkan penggunaan **basic widget**, **carousel slider**, **list horizontal movie**, serta **bottom navigation bar** dengan tema gelap.
 
-A new Flutter project.
+---
 
-## Getting Started
+## 📱 Tampilan Aplikasi
 
-This project is a starting point for a Flutter application.
+| Home Page (Carousel & Movie List) | Detail Movie Page |
+|----------------------------------|------------------|
+| <img width="260" src="https://github.com/user-attachments/assets/e8270ca5-b07b-4dde-88a3-4f822c5a8fbe" /> | <img width="260" src="https://github.com/user-attachments/assets/1764ab2e-9bee-4848-8762-2b5a33c6f4e8" /> |
 
-A few resources to get you started if this is your first Flutter project:
+---
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+## 🛠️ Fitur Utama
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
-# Basic_Widget1
+✅ Carousel Slider (Auto Play)  
+✅ Movie Horizontal List + Title  
+✅ Navigation ke Detail Page  
+✅ Bottom Navigation Rounded Style  
+✅ Full Dark Mode Theme  
+
+---
+
+## 🚀 Teknologi Digunakan
+- Flutter SDK (Dart)
+- Carousel Slider Package
+- Material Design UI
+
+---
+
+## 📂 Struktur Project
