@@ -12,12 +12,16 @@ class MovieApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
+      theme: ThemeData(
+        brightness: Brightness.dark,
+        primaryColor: Colors.redAccent,
+        scaffoldBackgroundColor: Colors.black,
+      ),
       home: const MainPage(),
     );
   }
 }
 
-// ✅ MAIN PAGE DENGAN BOTTOM NAVIGATION
 class MainPage extends StatefulWidget {
   const MainPage({super.key});
 
@@ -37,173 +41,198 @@ class _MainPageState extends State<MainPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.black,
-      body: pages[selectedIndex],
-      bottomNavigationBar: BottomNavigationBar(
-        backgroundColor: Colors.black,
-        selectedItemColor: Colors.redAccent,
-        unselectedItemColor: Colors.grey,
-        currentIndex: selectedIndex,
-        onTap: (index) {
-          setState(() {
-            selectedIndex = index;
-          });
-        },
-        items: const [
-          BottomNavigationBarItem(icon: Icon(Icons.home), label: "Home"),
-          BottomNavigationBarItem(icon: Icon(Icons.explore), label: "Explore"),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.settings),
-            label: "Settings",
-          ),
-        ],
+      body: AnimatedSwitcher(
+        duration: const Duration(milliseconds: 300),
+        transitionBuilder: (child, animation) =>
+            FadeTransition(opacity: animation, child: child),
+        child: pages[selectedIndex],
+      ),
+
+      bottomNavigationBar: Container(
+        decoration: const BoxDecoration(
+          color: Color(0xFF1A1A1A),
+          borderRadius: BorderRadius.vertical(top: Radius.circular(26)),
+        ),
+        padding: const EdgeInsets.only(bottom: 12, top: 4),
+        child: BottomNavigationBar(
+          backgroundColor: Colors.transparent,
+          elevation: 0,
+          currentIndex: selectedIndex,
+          selectedItemColor: Colors.redAccent,
+          unselectedItemColor: Colors.grey,
+          onTap: (i) => setState(() => selectedIndex = i),
+          items: const [
+            BottomNavigationBarItem(
+              icon: Icon(Icons.home_rounded),
+              label: "Home",
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.explore_rounded),
+              label: "Explore",
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.settings_rounded),
+              label: "Settings",
+            ),
+          ],
+        ),
       ),
     );
   }
 }
 
-class MovieHomePage extends StatefulWidget {
-  const MovieHomePage({super.key});
+class MovieData {
+  static const nowPlaying = [
+    {"img": "images/Batgirl.jpeg", "title": "The Batgirl"},
+    {"img": "images/BATMAN.jpeg", "title": "The Batman"},
+    {"img": "images/batmanart.jpeg", "title": "The Batman Part 2"},
+  ];
 
-  @override
-  State<MovieHomePage> createState() => _MovieHomePageState();
+  static const moviesHorizontal = [
+    {"img": "images/Batgirl.jpeg", "title": "The Batgirl"},
+    {"img": "images/BATMAN.jpeg", "title": "The Batman"},
+    {"img": "images/batmanart.jpeg", "title": "The Batman Part 2"},
+    {"img": "images/Batgirl.jpeg", "title": "The Batgirl"},
+  ];
 }
 
-class _MovieHomePageState extends State<MovieHomePage> {
-  final List<String> nowPlaying = [
-    'images/Batgirl.jpeg',
-    'images/BATMAN.jpeg',
-    'images/batman.png',
-  ];
+class MovieHomePage extends StatelessWidget {
+  const MovieHomePage({super.key});
 
-  final List<String> moviesHorizontal = [
-    'images/Batgirl.jpeg',
-    'images/BATMAN.jpeg',
-    'images/batman.png',
-    'images/Batgirl.jpeg',
-  ];
-
-  // ✅ Widget untuk menampilkan kategori film
-  Widget buildMovieRow(String title) {
+  Widget buildMovieRow(String label, BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 12),
           child: Text(
-            title,
-            style: const TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-              color: Colors.white,
-            ),
+            label,
+            style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
           ),
         ),
         const SizedBox(height: 8),
         SizedBox(
-          height: 160,
+          height: 180,
           child: ListView.builder(
             scrollDirection: Axis.horizontal,
-            itemCount: moviesHorizontal.length,
+            itemCount: MovieData.moviesHorizontal.length,
             itemBuilder: (context, index) {
+              var movie = MovieData.moviesHorizontal[index];
               return GestureDetector(
                 onTap: () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(
-                      builder: (_) => DetailPage(
-                        img: moviesHorizontal[index],
-                        title: title,
+                    PageRouteBuilder(
+                      pageBuilder: (_, __, ___) => DetailPage(
+                        img: movie["img"]!,
+                        title: movie["title"]!,
                       ),
+                      transitionDuration: const Duration(milliseconds: 400),
+                      transitionsBuilder: (_, animation, __, child) =>
+                          FadeTransition(opacity: animation, child: child),
                     ),
                   );
                 },
+
                 child: Container(
                   width: 120,
                   margin: const EdgeInsets.symmetric(horizontal: 8),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(12),
-                    image: DecorationImage(
-                      image: AssetImage(moviesHorizontal[index]),
-                      fit: BoxFit.cover,
-                    ),
+                  child: Column(
+                    children: [
+                      Expanded(
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(12),
+                          child: Hero(
+                            tag: movie["img"]!,
+                            child: Image.asset(
+                              movie["img"]!,
+                              width: 120,
+                              fit: BoxFit.cover,
+                            ),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 6),
+                      Text(
+                        movie["title"]!,
+                        overflow: TextOverflow.ellipsis,
+                        textAlign: TextAlign.center,
+                        style: const TextStyle(fontSize: 14),
+                      ),
+                    ],
                   ),
                 ),
               );
             },
           ),
         ),
-        const SizedBox(height: 16),
+        const SizedBox(height: 20),
       ],
     );
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.black,
-      body: SafeArea(
-        child: SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // ✅ Carousel Slider
-              CarouselSlider(
-                options: CarouselOptions(
-                  height: 260,
-                  autoPlay: true,
-                  enlargeCenterPage: true,
-                  viewportFraction: 1,
-                ),
-                items: nowPlaying.map((img) {
-                  return GestureDetector(
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (_) =>
-                              DetailPage(img: img, title: "Now Playing"),
+    return SafeArea(
+      child: SingleChildScrollView(
+        child: Column(
+          children: [
+            CarouselSlider(
+              options: CarouselOptions(
+                height: 300,
+                autoPlay: true,
+                enlargeCenterPage: true,
+                viewportFraction: 0.9,
+              ),
+              items: MovieData.nowPlaying.map((movie) {
+                return GestureDetector(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => DetailPage(
+                          img: movie["img"]!,
+                          title: movie["title"]!,
                         ),
-                      );
-                    },
-                    child: Stack(
-                      children: [
-                        SizedBox.expand(
-                          child: Image.asset(img, fit: BoxFit.cover),
-                        ),
-                        Positioned(
-                          top: 10,
-                          left: 10,
-                          child: Container(
-                            padding: const EdgeInsets.symmetric(
-                              vertical: 4,
-                              horizontal: 8,
-                            ),
-                            decoration: BoxDecoration(
-                              color: Colors.red,
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                            child: const Text(
-                              "Now Playing",
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
+                      ),
+                    );
+                  },
+                  child: Stack(
+                    children: [
+                      Hero(
+                        tag: movie["img"]!,
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(16),
+                          child: Image.asset(
+                            movie["img"]!,
+                            fit: BoxFit.cover,
+                            width: double.infinity,
                           ),
                         ),
-                      ],
-                    ),
-                  );
-                }).toList(),
-              ),
+                      ),
+                      Positioned(
+                        bottom: 12,
+                        left: 16,
+                        child: Text(
+                          movie["title"]!,
+                          style: const TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 20,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                );
+              }).toList(),
+            ),
 
-              const SizedBox(height: 20),
-              buildMovieRow("Trending"),
-              buildMovieRow("Popular"),
-              buildMovieRow("Top Rated"),
-            ],
-          ),
+            const SizedBox(height: 20),
+            buildMovieRow("Trending", context),
+            buildMovieRow("Popular", context),
+            buildMovieRow("Top Rated", context),
+          ],
         ),
       ),
     );
@@ -215,14 +244,8 @@ class ExplorePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(
-      backgroundColor: Colors.black,
-      body: Center(
-        child: Text(
-          "Explore Page",
-          style: TextStyle(color: Colors.white, fontSize: 26),
-        ),
-      ),
+    return const Center(
+      child: Text("Explore Page", style: TextStyle(fontSize: 26)),
     );
   }
 }
@@ -232,18 +255,13 @@ class SettingsPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(
-      backgroundColor: Colors.black,
-      body: Center(
-        child: Text(
-          "Settings Page",
-          style: TextStyle(color: Colors.white, fontSize: 26),
-        ),
-      ),
+    return const Center(
+      child: Text("Settings Page", style: TextStyle(fontSize: 26)),
     );
   }
 }
 
+// ✅ DETAIL PAGE
 class DetailPage extends StatelessWidget {
   final String img;
   final String title;
@@ -253,20 +271,20 @@ class DetailPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.black,
-      appBar: AppBar(backgroundColor: Colors.redAccent, title: Text(title)),
-      body: Center(
-        child: Column(
-          children: [
-            const SizedBox(height: 20),
-            Image.asset(img, height: 300, fit: BoxFit.cover),
-            const SizedBox(height: 20),
-            const Text(
-              "Detail Film Akan Ditambahkan...",
-              style: TextStyle(color: Colors.white, fontSize: 20),
-            ),
-          ],
-        ),
+      appBar: AppBar(title: Text(title), backgroundColor: Colors.redAccent),
+      body: Column(
+        children: [
+          const SizedBox(height: 20),
+          Hero(
+            tag: img,
+            child: Image.asset(img, height: 350, fit: BoxFit.contain),
+          ),
+          const SizedBox(height: 20),
+          Text(
+            "Detail Film Akan Ditambahkan...",
+            style: const TextStyle(fontSize: 20),
+          ),
+        ],
       ),
     );
   }
